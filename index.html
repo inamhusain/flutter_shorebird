@@ -256,6 +256,12 @@
   /* ---------- chrome ---------- */
   .progress { position: fixed; top: 0; left: 0; height: 2px; width: 0; z-index: 20; background: var(--grad); }
   .count { position: fixed; bottom: 20px; left: 24px; z-index: 20; font: 500 .74rem -apple-system, Inter, sans-serif; color: #48484A; letter-spacing: .02em; }
+  .fs { position: fixed; bottom: 14px; right: 18px; z-index: 20; display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 50%;
+        background: rgba(255,255,255,.06); color: #86868B; cursor: pointer; transition: background .3s, color .3s, opacity .4s; }
+  .fs:hover { background: rgba(255,255,255,.14); color: var(--ink); }
+  .fs svg { width: 16px; height: 16px; }
+  .fs .exit, :fullscreen .fs .enter { display: none; } :fullscreen .fs .exit { display: block; }
+  :fullscreen .fs { opacity: .35; } :fullscreen .fs:hover { opacity: 1; }
   button:focus-visible, a:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
 
   @media (max-width: 860px) {
@@ -273,6 +279,10 @@
 <body>
 <div class="progress" id="progress"></div>
 <div class="count" id="count"></div>
+<button class="fs" id="fs" type="button" aria-label="Toggle full screen (F)" title="Full screen (F)">
+  <svg class="enter" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1.5 5.5v-4h4M10.5 1.5h4v4M14.5 10.5v4h-4M5.5 14.5h-4v-4"/></svg>
+  <svg class="exit" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5.5 1.5v4h-4M14.5 5.5h-4v-4M10.5 14.5v-4h4M1.5 10.5h4v4"/></svg>
+</button>
 
 <!-- ============ HERO ============ -->
 <section id="hero" data-title="Shorebird Code Push">
@@ -976,6 +986,19 @@ shorebird patches rollback  --release-version 1.0.0+1 --patch-number 1</code></p
       var t = document.querySelector(a.getAttribute('href'));
       if (t) { e.preventDefault(); go(stopsOf(t)[0]); }
     });
+  });
+
+  /* ---- full screen: button or F key ---- */
+  function toggleFs() {
+    var d = document, el = d.documentElement;
+    if (d.fullscreenElement || d.webkitFullscreenElement) (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+    else (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+  }
+  var fsBtn = document.getElementById('fs');
+  if (!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen)) fsBtn.hidden = true;
+  fsBtn.addEventListener('click', function () { toggleFs(); fsBtn.blur(); });
+  document.addEventListener('keydown', function (e) {
+    if ((e.key === 'f' || e.key === 'F') && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); toggleFs(); }
   });
 
   /* ---- copy buttons ---- */
